@@ -13,3 +13,23 @@ It covers:
 - Power BI reporting  
 
 The goal is to simulate a **real-world retail analytics workflow** using modern data engineering practices and Fabric Lakehouse architecture.
+
+## 🚀 Technologies Used
+
+- **Microsoft Fabric**
+  - Lakehouse  
+  - Notebooks (PySpark)  
+  - SQL Endpoint  
+  - Pipelines  
+  - Dataflows Gen2  
+
+- **Azure OneLake**
+
+- **PySpark**
+
+- **Delta Lake**
+
+- **Power BI**
+
+- **GitHub (Version Control)**
+
