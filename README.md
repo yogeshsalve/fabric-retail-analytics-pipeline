@@ -104,13 +104,4 @@ Validation includes:
 
 ---
 
-If you want, I can now generate:
-
-✅ Full README.md (all sections combined)  
-✅ Pipeline JSON file  
-✅ Notebook templates (PySpark)  
-✅ Star Schema diagram PNG  
-✅ GitHub portfolio formatting  
-
-Just tell me!
 
