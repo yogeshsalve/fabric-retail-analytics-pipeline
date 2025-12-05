@@ -1,0 +1,328 @@
+{
+    name Retail_ETL_Pipeline,
+    objectId c4333e1e-3904-4fcf-8ac4-370214fef3d2,
+    properties {
+        activities [
+            {
+                name Copy_Raw_to_Lakehouse_sales,
+                type Copy,
+                dependsOn [],
+                policy {
+                    timeout 0.120000,
+                    retry 0,
+                    retryIntervalInSeconds 30,
+                    secureOutput false,
+                    secureInput false
+                },
+                typeProperties {
+                    source {
+                        type DelimitedTextSource,
+                        storeSettings {
+                            type LakehouseReadSettings,
+                            recursive true,
+                            enablePartitionDiscovery false
+                        },
+                        formatSettings {
+                            type DelimitedTextReadSettings
+                        },
+                        datasetSettings {
+                            annotations [],
+                            connectionSettings {
+                                name retail_sales_lakehouse,
+                                properties {
+                                    annotations [],
+                                    type Lakehouse,
+                                    typeProperties {
+                                        workspaceId afca135e-24e2-4d7b-9827-4fd432ab8170,
+                                        artifactId 11f0c994-5dfe-48a0-8b75-c4baee2182c0,
+                                        rootFolder Files
+                                    },
+                                    externalReferences {
+                                        connection 54d76c17-6c52-4a62-b3ad-1ed069c9b9cf
+                                    }
+                                }
+                            },
+                            type DelimitedText,
+                            typeProperties {
+                                location {
+                                    type LakehouseLocation,
+                                    fileName sales.csv,
+                                    folderPath raw
+                                },
+                                columnDelimiter ,,
+                                escapeChar ,
+                                firstRowAsHeader true,
+                                quoteChar 
+                            },
+                            schema []
+                        }
+                    },
+                    sink {
+                        type LakehouseTableSink,
+                        tableActionOption Append,
+                        applyVOrder true,
+                        datasetSettings {
+                            annotations [],
+                            connectionSettings {
+                                name retail_sales_lakehouse,
+                                properties {
+                                    annotations [],
+                                    type Lakehouse,
+                                    typeProperties {
+                                        workspaceId afca135e-24e2-4d7b-9827-4fd432ab8170,
+                                        artifactId 11f0c994-5dfe-48a0-8b75-c4baee2182c0,
+                                        rootFolder Tables
+                                    },
+                                    externalReferences {
+                                        connection 54d76c17-6c52-4a62-b3ad-1ed069c9b9cf
+                                    }
+                                }
+                            },
+                            type LakehouseTable,
+                            schema [],
+                            typeProperties {
+                                table sales
+                            }
+                        }
+                    },
+                    enableStaging false,
+                    translator {
+                        type TabularTranslator,
+                        typeConversion true,
+                        typeConversionSettings {
+                            allowDataTruncation true,
+                            treatBooleanAsNumber false
+                        }
+                    }
+                }
+            },
+            {
+                name Process_Retail_Data,
+                type TridentNotebook,
+                dependsOn [
+                    {
+                        activity Copy_Raw_to_Lakehouse_stores,
+                        dependencyConditions [
+                            Succeeded
+                        ]
+                    }
+                ],
+                policy {
+                    timeout 0.120000,
+                    retry 0,
+                    retryIntervalInSeconds 30,
+                    secureOutput false,
+                    secureInput false
+                },
+                typeProperties {
+                    notebookId c2e4910f-4d8a-46e2-8231-bbbb1b75f6f6,
+                    workspaceId afca135e-24e2-4d7b-9827-4fd432ab8170
+                }
+            },
+            {
+                name Copy_Raw_to_Lakehouse_products,
+                type Copy,
+                dependsOn [
+                    {
+                        activity Copy_Raw_to_Lakehouse_sales,
+                        dependencyConditions [
+                            Succeeded
+                        ]
+                    }
+                ],
+                policy {
+                    timeout 0.120000,
+                    retry 0,
+                    retryIntervalInSeconds 30,
+                    secureOutput false,
+                    secureInput false
+                },
+                typeProperties {
+                    source {
+                        type DelimitedTextSource,
+                        storeSettings {
+                            type LakehouseReadSettings,
+                            recursive true,
+                            enablePartitionDiscovery false
+                        },
+                        formatSettings {
+                            type DelimitedTextReadSettings
+                        },
+                        datasetSettings {
+                            annotations [],
+                            connectionSettings {
+                                name retail_sales_lakehouse,
+                                properties {
+                                    annotations [],
+                                    type Lakehouse,
+                                    typeProperties {
+                                        workspaceId afca135e-24e2-4d7b-9827-4fd432ab8170,
+                                        artifactId 11f0c994-5dfe-48a0-8b75-c4baee2182c0,
+                                        rootFolder Files
+                                    },
+                                    externalReferences {
+                                        connection 54d76c17-6c52-4a62-b3ad-1ed069c9b9cf
+                                    }
+                                }
+                            },
+                            type DelimitedText,
+                            typeProperties {
+                                location {
+                                    type LakehouseLocation,
+                                    fileName products.csv,
+                                    folderPath raw
+                                },
+                                columnDelimiter ,,
+                                escapeChar ,
+                                firstRowAsHeader true,
+                                quoteChar 
+                            },
+                            schema []
+                        }
+                    },
+                    sink {
+                        type LakehouseTableSink,
+                        tableActionOption OverwriteSchema,
+                        partitionOption None,
+                        applyVOrder true,
+                        datasetSettings {
+                            annotations [],
+                            connectionSettings {
+                                name retail_sales_lakehouse,
+                                properties {
+                                    annotations [],
+                                    type Lakehouse,
+                                    typeProperties {
+                                        workspaceId afca135e-24e2-4d7b-9827-4fd432ab8170,
+                                        artifactId 11f0c994-5dfe-48a0-8b75-c4baee2182c0,
+                                        rootFolder Tables
+                                    },
+                                    externalReferences {
+                                        connection 54d76c17-6c52-4a62-b3ad-1ed069c9b9cf
+                                    }
+                                }
+                            },
+                            type LakehouseTable,
+                            schema [],
+                            typeProperties {
+                                table products
+                            }
+                        }
+                    },
+                    enableStaging false,
+                    translator {
+                        type TabularTranslator,
+                        typeConversion true,
+                        typeConversionSettings {
+                            allowDataTruncation true,
+                            treatBooleanAsNumber false
+                        }
+                    }
+                }
+            },
+            {
+                name Copy_Raw_to_Lakehouse_stores,
+                type Copy,
+                dependsOn [
+                    {
+                        activity Copy_Raw_to_Lakehouse_products,
+                        dependencyConditions [
+                            Succeeded
+                        ]
+                    }
+                ],
+                policy {
+                    timeout 0.120000,
+                    retry 0,
+                    retryIntervalInSeconds 30,
+                    secureOutput false,
+                    secureInput false
+                },
+                typeProperties {
+                    source {
+                        type DelimitedTextSource,
+                        storeSettings {
+                            type LakehouseReadSettings,
+                            recursive true,
+                            enablePartitionDiscovery false
+                        },
+                        formatSettings {
+                            type DelimitedTextReadSettings
+                        },
+                        datasetSettings {
+                            annotations [],
+                            connectionSettings {
+                                name retail_sales_lakehouse,
+                                properties {
+                                    annotations [],
+                                    type Lakehouse,
+                                    typeProperties {
+                                        workspaceId afca135e-24e2-4d7b-9827-4fd432ab8170,
+                                        artifactId 11f0c994-5dfe-48a0-8b75-c4baee2182c0,
+                                        rootFolder Files
+                                    },
+                                    externalReferences {
+                                        connection 54d76c17-6c52-4a62-b3ad-1ed069c9b9cf
+                                    }
+                                }
+                            },
+                            type DelimitedText,
+                            typeProperties {
+                                location {
+                                    type LakehouseLocation,
+                                    fileName stores.csv,
+                                    folderPath raw
+                                },
+                                columnDelimiter ,,
+                                escapeChar ,
+                                firstRowAsHeader true,
+                                quoteChar 
+                            },
+                            schema []
+                        }
+                    },
+                    sink {
+                        type LakehouseTableSink,
+                        tableActionOption OverwriteSchema,
+                        partitionOption None,
+                        applyVOrder true,
+                        datasetSettings {
+                            annotations [],
+                            connectionSettings {
+                                name retail_sales_lakehouse,
+                                properties {
+                                    annotations [],
+                                    type Lakehouse,
+                                    typeProperties {
+                                        workspaceId afca135e-24e2-4d7b-9827-4fd432ab8170,
+                                        artifactId 11f0c994-5dfe-48a0-8b75-c4baee2182c0,
+                                        rootFolder Tables
+                                    },
+                                    externalReferences {
+                                        connection 54d76c17-6c52-4a62-b3ad-1ed069c9b9cf
+                                    }
+                                }
+                            },
+                            type LakehouseTable,
+                            schema [],
+                            typeProperties {
+                                table dim_stores
+                            }
+                        }
+                    },
+                    enableStaging false,
+                    translator {
+                        type TabularTranslator,
+                        typeConversion true,
+                        typeConversionSettings {
+                            allowDataTruncation true,
+                            treatBooleanAsNumber false
+                        }
+                    }
+                }
+            }
+        ],
+        lastModifiedByObjectId 9185014c-cbcf-4fce-8717-511687fdd3b0,
+        lastPublishTime 2025-12-04T082018Z
+    }
+}
